@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def config_db():
     return sqlite3.connect("best_buy_prods.db")
 
@@ -7,9 +8,9 @@ def config_db():
 def create_table() -> None:
     con = config_db()
     cur = con.cursor()
-    cur.execute('DROP TABLE IF EXISTS products;')
+    cur.execute("DROP TABLE IF EXISTS products;")
 
-    sql = '''
+    sql = """
         CREATE TABLE products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             url TEXT NOT NULL,
@@ -18,29 +19,33 @@ def create_table() -> None:
             description TEXT,
             images TEXT
         );
-    '''
+    """
     cur.execute(sql)
     con.commit()
+
 
 def insert_values(product: dict[str, str]):
     con = config_db()
     cur = con.cursor()
-    sql ='''
+    sql = """
         INSERT INTO products (url, sku, name, description, images)
         VALUES (?, ?, ?, ?, ?)
-    '''
-    cur.execute(sql, (
-        product['url'],
-        product['sku'],
-        product['name'],
-        product['description'],
-        product['images']
-    ))
+    """
+    cur.execute(
+        sql,
+        (
+            product["url"],
+            product["sku"],
+            product["name"],
+            product["description"],
+            product["images"],
+        ),
+    )
     con.commit()
 
 
 def select_values() -> list[list[str]]:
     con = config_db()
     cur = con.cursor()
-    res = cur.execute('SELECT * FROM products')
-    return (res.fetchall())
+    res = cur.execute("SELECT * FROM products")
+    return res.fetchall()

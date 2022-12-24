@@ -15,7 +15,7 @@ def execute_web_driver() -> WebDriver:
         webdriver: Firefox Webdriver
     """
     options = Options()
-    options.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
+    options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
     return webdriver.Firefox(options=options)
 
 
@@ -26,9 +26,9 @@ def select_country_when_enter_the_site(driver: WebDriver) -> None:
         driver (WebDriver): Firefox Webdriver
     """
     try:
-        headings = driver.find_element(By.CLASS_NAME, 'heading')
-        if headings.text == 'Hello!':
-            driver.find_element(By.CLASS_NAME, 'us-link').click()
+        headings = driver.find_element(By.CLASS_NAME, "heading")
+        if headings.text == "Hello!":
+            driver.find_element(By.CLASS_NAME, "us-link").click()
     except NoSuchElementException:
         pass
 
@@ -47,16 +47,18 @@ def get_home_page_categories(url_homepage: str, driver: WebDriver) -> list[str]:
 
     driver.get(url_homepage)
     select_country_when_enter_the_site(driver)
-    
-    categories_elements = driver.find_elements(By.CLASS_NAME, 'se-item-text')
+
+    categories_elements = driver.find_elements(By.CLASS_NAME, "se-item-text")
     for category_element in categories_elements:
         categories_urls.append(
-            category_element.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            category_element.find_element(By.TAG_NAME, "a").get_attribute("href")
         )
     return categories_urls
 
 
-def get_products_urls_in_categories(categories_urls: list[str], driver: WebDriver) -> list[str]:
+def get_products_urls_in_categories(
+    categories_urls: list[str], driver: WebDriver
+) -> list[str]:
     """Get the product's urls of the all categories.
 
     Args:
@@ -85,7 +87,9 @@ def get_products_urls_in_category(category_url: str, driver: WebDriver) -> list[
     category_products_url = []
     page_number = 1
     while True:
-        products_urls = get_products_urls_in_page(category_url+f'?cp={page_number}', driver)
+        products_urls = get_products_urls_in_page(
+            category_url + f"?cp={page_number}", driver
+        )
         if products_urls:
             category_products_url.extend(products_urls)
             page_number += 1
@@ -107,12 +111,14 @@ def get_products_urls_in_page(url: str, driver: WebDriver) -> Optional[list[str]
     products_urls = []
     driver.get(url)
     select_country_when_enter_the_site(driver)
-    web_elements = driver.find_elements(By.CLASS_NAME, 'sku-title')
+    web_elements = driver.find_elements(By.CLASS_NAME, "sku-title")
     if not web_elements:
         return
     for web_element in web_elements:
         try:
-            url_product = web_element.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            url_product = web_element.find_element(By.TAG_NAME, "a").get_attribute(
+                "href"
+            )
         except NoSuchElementException:
             continue
         if url_product not in products_urls:
@@ -151,41 +157,49 @@ def get_product_info(url_product: str, driver: WebDriver) -> dict[str, str]:
     driver.maximize_window()
     driver.execute_script("window.scrollTo(0, 1100)")
     time.sleep(2)
-    driver.find_element(By.CLASS_NAME, 'c-accordion-trigger-label').click()
+    driver.find_element(By.CLASS_NAME, "c-accordion-trigger-label").click()
 
     try:
-        name = driver.find_element(By.CLASS_NAME, 'sku-title').find_element(By.TAG_NAME, 'h1').text
+        name = (
+            driver.find_element(By.CLASS_NAME, "sku-title")
+            .find_element(By.TAG_NAME, "h1")
+            .text
+        )
         name = name.strip()
     except NoSuchElementException:
-        name = ''
+        name = ""
 
     try:
         sku = driver.find_element("xpath", "//div[@class='sku product-data']").text
     except NoSuchElementException:
-        sku = ''
+        sku = ""
 
     try:
-        description = driver.find_element(
-            "xpath", "//div[@class='long-description-container body-copy ']"
-            ).find_element(By.TAG_NAME, 'div').text
-        description = ' '.join(description.split())
+        description = (
+            driver.find_element(
+                "xpath", "//div[@class='long-description-container body-copy ']"
+            )
+            .find_element(By.TAG_NAME, "div")
+            .text
+        )
+        description = " ".join(description.split())
         description = description.strip()
     except NoSuchElementException:
-        description = ''
+        description = ""
 
     img_list = []
     img_elements = driver.find_elements("xpath", "//li[@class='image-thumbnail']")
     for img_element in img_elements:
-        url_img = img_element.find_element(By.TAG_NAME, 'img').get_attribute('src')
-        url_img = url_img.split(';')[0]
+        url_img = img_element.find_element(By.TAG_NAME, "img").get_attribute("src")
+        url_img = url_img.split(";")[0]
         if url_img not in img_list:
             img_list.append(url_img)
-    images = ';'.join(img_list)
+    images = ";".join(img_list)
 
     return {
-        'url': url_product,
-        'sku': sku,
-        'name': name,
-        'description': description,
-        'images': images
+        "url": url_product,
+        "sku": sku,
+        "name": name,
+        "description": description,
+        "images": images,
     }
