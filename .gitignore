@@ -1,0 +1,8 @@
+# files
+*.exe
+*.log
+*.db
+
+# folders
+__pycache__
+venv
