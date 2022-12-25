@@ -13,7 +13,8 @@
 
 ### What is used in this project
 * Selenium;
-* SQLite.
+* SQLite;
+* Pytest.
 
 ### Future Improvements
 * Create tests for database;
